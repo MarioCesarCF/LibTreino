@@ -1,0 +1,6 @@
+@LibTreino_HostAddress = http://localhost:5027
+
+GET {{LibTreino_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
