@@ -94,38 +94,39 @@ Esta API tem como objetivo gerenciar os dados salvos no banco de dados, fornecen
 
 ### Autenticação
 
-* **POST /auth/register** - Cadastro de novo usuário.
+* **POST /api/user** - Cadastro de novo usuário.
 
-* **POST /auth/login** - Autenticação e geração de token.
+* **POST /api/user/login** - Autenticação e geração de token.
 
 ### Usuários
 
-* **GET /users/{id}** - Obtém informações do usuário.
+* **GET /api/user/{id}** - Obtém informações do usuário.
 
-* **PUT /users/{id}** - Atualiza dados do usuário.
+* **PUT /api/user/{id}** - Atualiza dados do usuário.
 
-* **DELETE /users/{id}** - Exclui o usuário.
+* **DELETE /api/user/{id}** - Exclui o usuário.
 
 ### Listas
 
-* **POST /listas** - Cria uma nova lista.
+* **POST /api/shoppinglistr** - Cria uma nova lista.
 
-* **GET /listas** - Obtém todas as listas do usuário.
+* **GET /api/shoppinglist** - Obtém todas as listas do usuário.
 
-* **GET /listas/{id}** - Obtém detalhes de uma lista específica.
+* **GET /api/shoppinglist/{id}** - Obtém detalhes de uma lista específica.
 
-* **PUT /listas/{id}** - Atualiza uma lista.
+* **PUT /api/shoppinglist/{id}** - Atualiza uma lista.
 
-* **DELETE /listas/{id}** - Exclui uma lista.
+* **DELETE /api/shoppinglist/{id}** - Exclui uma lista.
 
 ### Produtos
 
-* **POST /listas/{id}/produtos** - Adiciona um novo produto à lista.
+* **POST /api/product** - Adiciona um novo produto à lista.
 
-* **PUT /listas/{id}/produtos/{produtoId}** - Atualiza a quantidade ou status de um produto.
+* **PUT /api/product/{id}** - Atualiza a quantidade ou status de um produto.
 
-* **DELETE /listas/{id}/produtos/{produtoId}** - Remove um produto da lista.
+* **DELETE /api/product/{id}** - Remove um produto da lista.
 
+(Para ser implementadas)
 ### Amigos
 
 * **POST /amigos** - Adiciona um amigo por código.
