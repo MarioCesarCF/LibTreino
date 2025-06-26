@@ -1,6 +1,4 @@
 ﻿using LibTreino.Data;
-using LibTreino.Enums;
-using LibTreino.Models.ViewModels.Produto;
 using LibTreino.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;

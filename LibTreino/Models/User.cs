@@ -14,6 +14,6 @@ namespace LibTreino.Models
         public string Password { get; set; }
         public string Phone { get; set; }        
         [JsonIgnore]
-        public IEnumerable<ShoppingList> Listas { get; set; }
+        public IEnumerable<ShoppingList>? Listas { get; set; }
     }
 }

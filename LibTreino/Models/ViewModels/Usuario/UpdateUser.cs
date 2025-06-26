@@ -2,9 +2,9 @@
 {
     public class UpdateUser
     {
-        public string? Nome { get; set; }
-        public string? Telefone { get; set; }
-        public string? Senha { get; set; }
+        public string? Name { get; set; }
+        public string? Phone { get; set; }
+        public string? Password { get; set; }
         public IEnumerable<Models.ShoppingList>? Listas { get; set; }
     }
 }

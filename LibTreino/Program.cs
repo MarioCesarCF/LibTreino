@@ -1,6 +1,9 @@
+using DotNetEnv;
 using LibTreino.Data;
 using LibTreino.Services;
-using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +25,28 @@ builder.Services.Configure<ConfigDatabaseSettings>(options =>
 builder.Services.Configure<ConfigDatabaseSettings>(builder.Configuration.GetSection("MongoConnection"));
 builder.Services.AddSingleton<ProductService>();
 builder.Services.AddSingleton<ShoppingListService>();
-//Adicionar depois
-//builder.Services.AddSingleton<UsuarioService>();
+builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<TokenService>();
+
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -46,6 +69,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
