@@ -21,21 +21,20 @@ namespace LibTreino.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<List<User>> GetProdutosAsync()
+        public async Task<List<User>> GetUsersAsync()
         {
             return await _userService.GetAsync();
         }
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<User> RetornaProdutoAsync(string id)
+        public async Task<User> RetornaUserAsync(string id)
         {
             return await _userService.GetAsync(id);
         }
 
-        [Authorize]
         [HttpPost]
-        public async Task<User> CreateProdutoAsync(CreateUser newUser)
+        public async Task<User> CreateUserAsync(CreateUser newUser)
         {
             var user = await _userService.CreateAsync(newUser);
 
@@ -44,14 +43,14 @@ namespace LibTreino.Controllers
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task UpdateProdutoAsync(string id, UpdateUser updateUser)
+        public async Task UpdateUserAsync(string id, UpdateUser updateUser)
         {
             await _userService.UpdateAsync(id, updateUser);
         }
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task RemoveProdutoAsync(string id)
+        public async Task RemoveUserAsync(string id)
         {
             await _userService.RemoveAsync(id);
         }

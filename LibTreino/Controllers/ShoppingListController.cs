@@ -17,23 +17,23 @@ namespace LibTreino.Controllers
             _shoppingListService = shoppingListService;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
-        public async Task<List<ShoppingList>> GetProdutosAsync()
+        public async Task<List<ShoppingList>> GetShoppingListsAsync()
         {
             return await _shoppingListService.GetAsync();
         }
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ShoppingList> RetornaProdutoAsync(string id)
+        public async Task<ShoppingList> RetornaShoppingListAsync(string id)
         {
             return await _shoppingListService.GetAsync(id);
         }
 
         [Authorize]
         [HttpPost]
-        public async Task<ShoppingList> CreateProdutoAsync(CreateShoppingList newShoppingList)
+        public async Task<ShoppingList> CreateShoppingListAsync(CreateShoppingList newShoppingList)
         {
             var shoppingList = await _shoppingListService.CreateAsync(newShoppingList);
 
@@ -42,7 +42,7 @@ namespace LibTreino.Controllers
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProdutoAsync(string id, UpdateShoppingList updateShoppingList)
+        public async Task<IActionResult> UpdateShoppingListAsync(string id, UpdateShoppingList updateShoppingList)
         {
             await _shoppingListService.UpdateAsync(id, updateShoppingList);
             return NoContent();
@@ -50,7 +50,7 @@ namespace LibTreino.Controllers
 
         [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> RemoveProdutoAsync(string id)
+        public async Task<IActionResult> RemoveShoppingListAsync(string id)
         {
             await _shoppingListService.RemoveAsync(id);
             return NoContent();
