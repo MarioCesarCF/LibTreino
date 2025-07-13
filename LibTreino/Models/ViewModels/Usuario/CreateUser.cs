@@ -8,6 +8,6 @@ namespace LibTreino.Models.ViewModels.Usuario
         public string Email { get; set; }
         public string? Phone { get; set; }
         public string Password { get; set; }       
-        public IEnumerable<ShoppingList>? Listas { get; set; }
+        public IEnumerable<ListaCompras>? Listas { get; set; }
     }
 }

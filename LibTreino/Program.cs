@@ -23,9 +23,9 @@ builder.Services.Configure<ConfigDatabaseSettings>(options =>
 });
 
 builder.Services.Configure<ConfigDatabaseSettings>(builder.Configuration.GetSection("MongoConnection"));
-builder.Services.AddSingleton<ProductService>();
-builder.Services.AddSingleton<ShoppingListService>();
-builder.Services.AddSingleton<UserService>();
+builder.Services.AddSingleton<ProdutoService>();
+builder.Services.AddSingleton<ListaComprasService>();
+builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<TokenService>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);

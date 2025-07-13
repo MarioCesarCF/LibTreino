@@ -13,7 +13,7 @@ public class TokenService
         _config = config;
     }
 
-    public string GenerateToken(User user)
+    public string GenerateToken(Usuario user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"]);

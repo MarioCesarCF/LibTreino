@@ -1,6 +1,6 @@
 ﻿namespace LibTreino.Enums
 {
-    public enum Unity
+    public enum Unidade
     {
         Quilo = 1,
         Pacote,

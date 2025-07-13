@@ -6,6 +6,7 @@ namespace LibTreino.Models.DTOs
     {
         public string? Id { get; set; }
         public string Descricao { get; set; }
+        public int Valor { get; set; }        
 
         public static List<EnumDTO> ToList<TEnum>() where TEnum : Enum
         {
@@ -14,7 +15,8 @@ namespace LibTreino.Models.DTOs
                 .Select(e => new EnumDTO
                 {
                     Id = Convert.ToString(e),
-                    Descricao = ((Enum)(object)e).GetDisplayName()
+                    Descricao = ((Enum)(object)e).GetDisplayName(),
+                    Valor = Convert.ToInt32(e)
                 })
                 .ToList();
         }

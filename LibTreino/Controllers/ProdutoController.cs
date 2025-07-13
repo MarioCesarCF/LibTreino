@@ -1,44 +1,49 @@
 ﻿using LibTreino.Enums;
 using LibTreino.Models;
-using LibTreino.Models.Commons;
 using LibTreino.Models.DTOs;
 using LibTreino.Models.ViewModels.Produto;
 using LibTreino.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibTreino.Controllers
 {
     // Estudar melhor como fazer o controller e colocar mensagens de status code e erros
     [ApiController]
-    [Route("api/product")]
-    public class ProductController : ControllerBase
+    [Route("api/produto")]
+    public class ProdutoController : ControllerBase
     {
-        private readonly ProductService _produtoService;
+        private readonly ProdutoService _produtoService;
 
-        public ProductController(ProductService produtoService)
+        public ProdutoController(ProdutoService produtoService)
         {
             _produtoService = produtoService;
         }
 
         //[Authorize]
         [HttpGet]
-        public async Task<List<Product>> GetProdutosAsync()
+        public async Task<List<Produto>> GetProdutosAsync()
         {
             return await _produtoService.GetAsync();
         }
 
         //[Authorize]
+        [HttpGet]
+        public async Task<List<Produto>> GetProdutoByNomeAsync(string nome)
+        {
+            return await _produtoService.GetByNome(nome);
+        }
+
+        //[Authorize]
         [HttpGet("{id}")]
-        public async Task<Product> RetornaProdutoAsync(string id)
+        public async Task<Produto> RetornaProdutoAsync(string id)
         {
             return await _produtoService.GetAsync(id);
         }
 
         //[Authorize]
         [HttpPost]        
-        public async Task<Product> CreateProdutoAsync([FromBody] ProdutoCreateRequest novoProduto)
+        public async Task<Produto> CreateProdutoAsync([FromBody] CriaProduto novoProduto)
         {
             var produto = await _produtoService.CreateAsync(novoProduto);
 
@@ -47,7 +52,7 @@ namespace LibTreino.Controllers
 
         //[Authorize]
         [HttpPut("{id}")]
-        public async Task UpdateProdutoAsync(string id, UpdateProduct produtoAlterado)
+        public async Task UpdateProdutoAsync(string id, AtualizaProduto produtoAlterado)
         {
             await _produtoService.UpdateAsync(id, produtoAlterado);
         }
@@ -63,7 +68,7 @@ namespace LibTreino.Controllers
         [HttpGet, Route("unidades")]
         public async Task<List<EnumDTO>> GetUnidadesAsync()
         {
-            return await Task.Run(() => EnumDTO.ToList<Unity>());
+            return await Task.Run(() => EnumDTO.ToList<Unidade>());
         }
     }
 }

@@ -8,12 +8,12 @@ namespace LibTreino.Controllers
 {
     [ApiController]
     [Route("api/user")]
-    public class UserController : ControllerBase
+    public class UsuarioController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly UsuarioService _userService;
         private readonly TokenService _tokenService;
 
-        public UserController(UserService userService, TokenService tokenService)
+        public UsuarioController(UsuarioService userService, TokenService tokenService)
         {
             _userService = userService;
             _tokenService = tokenService;
@@ -21,20 +21,20 @@ namespace LibTreino.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<List<User>> GetUsersAsync()
+        public async Task<List<Usuario>> GetUsersAsync()
         {
             return await _userService.GetAsync();
         }
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<User> RetornaUserAsync(string id)
+        public async Task<Usuario> RetornaUserAsync(string id)
         {
             return await _userService.GetAsync(id);
         }
 
         [HttpPost]
-        public async Task<User> CreateUserAsync(CreateUser newUser)
+        public async Task<Usuario> CreateUserAsync(CreateUser newUser)
         {
             var user = await _userService.CreateAsync(newUser);
 

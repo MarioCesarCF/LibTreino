@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace LibTreino.Models
 {
-    public class User
+    public class Usuario
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
@@ -14,6 +14,6 @@ namespace LibTreino.Models
         public string Password { get; set; }
         public string Phone { get; set; }        
         [JsonIgnore]
-        public IEnumerable<ShoppingList>? Listas { get; set; }
+        public IEnumerable<ListaCompras>? Listas { get; set; }
     }
 }

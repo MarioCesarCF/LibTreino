@@ -6,32 +6,32 @@ using MongoDB.Driver;
 
 namespace LibTreino.Services
 {
-    public class UserService
+    public class UsuarioService
     {
-        private readonly IMongoCollection<User> _userCollection;
+        private readonly IMongoCollection<Usuario> _userCollection;
 
-        public UserService(IOptions<ConfigDatabaseSettings> databaseOptions)
+        public UsuarioService(IOptions<ConfigDatabaseSettings> databaseOptions)
         {
             var mongoClient = new MongoClient(databaseOptions.Value.ConnectionString);
             var mongoDatabase = mongoClient.GetDatabase(databaseOptions.Value.DatabaseName);
 
-            _userCollection = mongoDatabase.GetCollection<User>(databaseOptions.Value.UserCollectionName);
+            _userCollection = mongoDatabase.GetCollection<Usuario>(databaseOptions.Value.UserCollectionName);
         }
 
-        public async Task<List<User>> GetAsync()
+        public async Task<List<Usuario>> GetAsync()
         {
             return await _userCollection.Find(x => true).ToListAsync();
         }
 
-        public async Task<User> GetAsync(string id)
+        public async Task<Usuario> GetAsync(string id)
         {
             return await _userCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<User> CreateAsync(CreateUser newUser)
+        public async Task<Usuario> CreateAsync(CreateUser newUser)
         {
 
-            var user = new User
+            var user = new Usuario
             {
                 Name = newUser.Name,
                 Email = newUser.Email,
@@ -46,21 +46,21 @@ namespace LibTreino.Services
 
         public async Task UpdateAsync(string id, UpdateUser updateUser)
         {
-            var updateDefinitions = new List<UpdateDefinition<User>>();
+            var updateDefinitions = new List<UpdateDefinition<Usuario>>();
 
             if (!string.IsNullOrEmpty(updateUser.Name))
-                updateDefinitions.Add(Builders<User>.Update.Set(p => p.Name, updateUser.Name));
+                updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.Name, updateUser.Name));
 
             if (!string.IsNullOrEmpty(updateUser.Phone))
-                updateDefinitions.Add(Builders<User>.Update.Set(p => p.Phone, updateUser.Phone));
+                updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.Phone, updateUser.Phone));
 
             if (!string.IsNullOrEmpty(updateUser.Password))
-                updateDefinitions.Add(Builders<User>.Update.Set(p => p.Password, BCrypt.Net.BCrypt.HashPassword(updateUser.Password)));
+                updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.Password, BCrypt.Net.BCrypt.HashPassword(updateUser.Password)));
 
             if (updateUser.Listas != null)
-                updateDefinitions.Add(Builders<User>.Update.Set(p => p.Listas, updateUser.Listas));
+                updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.Listas, updateUser.Listas));
 
-            var combinedUpdates = Builders<User>.Update.Combine(updateDefinitions);
+            var combinedUpdates = Builders<Usuario>.Update.Combine(updateDefinitions);
 
             await _userCollection.UpdateOneAsync(x => x.Id == id, combinedUpdates);
         }
@@ -70,7 +70,7 @@ namespace LibTreino.Services
             await _userCollection.DeleteOneAsync(x => x.Id == id);
         }
 
-        public async Task<User> GetByEmailAsync(string email)
+        public async Task<Usuario> GetByEmailAsync(string email)
         {
             return await _userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
         }
