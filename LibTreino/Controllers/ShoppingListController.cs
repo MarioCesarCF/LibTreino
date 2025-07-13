@@ -1,4 +1,7 @@
-﻿using LibTreino.Models;
+﻿using LibTreino.Enums;
+using LibTreino.Models;
+using LibTreino.Models.Commons;
+using LibTreino.Models.DTOs;
 using LibTreino.Models.ViewModels.Lista;
 using LibTreino.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -19,19 +22,35 @@ namespace LibTreino.Controllers
 
         //[Authorize]
         [HttpGet]
-        public async Task<List<ShoppingList>> GetShoppingListsAsync()
+        public async Task<List<ShoppingListDTO>> GetShoppingListsAsync()
         {
-            return await _shoppingListService.GetAsync();
+            var listas = await _shoppingListService.GetAsync();
+
+            var dtoListas = listas.Select(lista => new ShoppingListDTO
+            {
+                Id = lista.Id,
+                Title = lista.Title,
+                Products = lista.Products.Select(prod => new ProductDTO
+                {
+                    Id = prod.Id,
+                    Name = prod.Name,
+                    Amount = prod.Amount,
+                    Unity = prod.Unity.ToEnumDto(),
+                    Situation = prod.Situation.ToEnumDto()
+                }).ToList()
+            }).ToList();
+
+            return dtoListas;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("{id}")]
         public async Task<ShoppingList> RetornaShoppingListAsync(string id)
         {
             return await _shoppingListService.GetAsync(id);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         public async Task<ShoppingList> CreateShoppingListAsync(CreateShoppingList newShoppingList)
         {
@@ -40,19 +59,26 @@ namespace LibTreino.Controllers
             return shoppingList;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateShoppingListAsync(string id, UpdateShoppingList updateShoppingList)
+        public async Task<IActionResult> UpdateShoppingListAsync([FromBody] UpdateShoppingList updateShoppingList)
         {
-            await _shoppingListService.UpdateAsync(id, updateShoppingList);
+            await _shoppingListService.UpdateAsync(updateShoppingList);
             return NoContent();
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveShoppingListAsync(string id)
         {
             await _shoppingListService.RemoveAsync(id);
+            return NoContent();
+        }
+
+        [HttpPost("add-product")]
+        public async Task<IActionResult> AddProductToListAsync([FromBody] AddProductToList dto)
+        {
+            await _shoppingListService.AddProductAsync(dto);
             return NoContent();
         }
     }

@@ -1,5 +1,7 @@
 ﻿using LibTreino.Enums;
 using LibTreino.Models;
+using LibTreino.Models.Commons;
+using LibTreino.Models.DTOs;
 using LibTreino.Models.ViewModels.Produto;
 using LibTreino.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -20,41 +22,48 @@ namespace LibTreino.Controllers
             _produtoService = produtoService;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet]
         public async Task<List<Product>> GetProdutosAsync()
         {
             return await _produtoService.GetAsync();
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("{id}")]
         public async Task<Product> RetornaProdutoAsync(string id)
         {
             return await _produtoService.GetAsync(id);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost]        
-        public async Task<Product> CreateProdutoAsync(CreateProduct novoProduto)
+        public async Task<Product> CreateProdutoAsync([FromBody] ProdutoCreateRequest novoProduto)
         {
             var produto = await _produtoService.CreateAsync(novoProduto);
 
             return produto;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPut("{id}")]
         public async Task UpdateProdutoAsync(string id, UpdateProduct produtoAlterado)
         {
             await _produtoService.UpdateAsync(id, produtoAlterado);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpDelete("{id}")]
         public async Task RemoveProdutoAsync(string id)
         {
             await _produtoService.RemoveAsync(id);
+        }
+
+        //[Authorize]
+        [HttpGet, Route("unidades")]
+        public async Task<List<EnumDTO>> GetUnidadesAsync()
+        {
+            return await Task.Run(() => EnumDTO.ToList<Unity>());
         }
     }
 }

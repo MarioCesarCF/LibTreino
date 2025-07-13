@@ -2,7 +2,7 @@
 
 namespace LibTreino.Models.ViewModels.Produto
 {
-    public class CreateProduct
+    public class ProdutoCreateRequest
     {
         public string Name { get; set; }
         public int Amount { get; set; }

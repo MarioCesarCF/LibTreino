@@ -31,7 +31,7 @@ namespace LibTreino.Services
             return await _productCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Product> CreateAsync(CreateProduct novoProduto)
+        public async Task<Product> CreateAsync(ProdutoCreateRequest novoProduto)
         {
             var produto = new Product
             {

@@ -41,7 +41,7 @@ namespace LibTreino.Services
             return shoppingList;
         }
 
-        public async Task UpdateAsync(string id, UpdateShoppingList updateShoppingList)
+        public async Task UpdateAsync(UpdateShoppingList updateShoppingList)
         {
             var updateDefinitions = new List<UpdateDefinition<ShoppingList>>();
 
@@ -53,12 +53,20 @@ namespace LibTreino.Services
 
             var combinedUpdates = Builders<ShoppingList>.Update.Combine(updateDefinitions);
 
-            await _shoppingListCollection.UpdateOneAsync(x => x.Id == id, combinedUpdates);
+            await _shoppingListCollection.UpdateOneAsync(x => x.Id == updateShoppingList.Id, combinedUpdates);
         }
 
         public async Task RemoveAsync(string id)
         {
             await _shoppingListCollection.DeleteOneAsync(x => x.Id == id);
+        }
+
+        public async Task AddProductAsync(AddProductToList dto)
+        {
+            var filter = Builders<ShoppingList>.Filter.Eq(s => s.Id, dto.ShoppingListId);
+            var update = Builders<ShoppingList>.Update.Push(s => s.Products, dto.Product);
+
+            await _shoppingListCollection.UpdateOneAsync(filter, update);
         }
     }
 }
