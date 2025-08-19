@@ -1,8 +1,8 @@
 ﻿namespace LibTreino.Models.ViewModels.Lista
 {
-    public class RemoveProdutoNaLista
+    public class RemoveProdutoLista
     {
         public string ListaComprasId { get; set; }
-        public string ItemListaId { get; set; }
+        public string Id { get; set; }
     }
 }

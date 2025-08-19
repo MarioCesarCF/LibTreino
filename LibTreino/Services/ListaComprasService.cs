@@ -1,8 +1,9 @@
 ﻿using LibTreino.Data;
+using LibTreino.Enums;
 using LibTreino.Models;
+using LibTreino.Models.ViewModels.Lista;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using LibTreino.Models.ViewModels.Lista;
 
 namespace LibTreino.Services
 {
@@ -46,6 +47,8 @@ namespace LibTreino.Services
 
             if (!string.IsNullOrEmpty(updateShoppingList.Nome))
                 updateDefinitions.Add(Builders<ListaCompras>.Update.Set(p => p.Nome, updateShoppingList.Nome));
+            if (updateShoppingList.ItemLista.Count() > 0)
+                updateDefinitions.Add(Builders<ListaCompras>.Update.Set(p => p.ItemLista, updateShoppingList.ItemLista));
 
             var combinedUpdates = Builders<ListaCompras>.Update.Combine(updateDefinitions);
 
@@ -59,17 +62,40 @@ namespace LibTreino.Services
 
         public async Task AddProductAsync(AdicionaProdutoNaLista dto)
         {
+            dto.ItemLista.Id = Guid.NewGuid().ToString();
+            dto.ItemLista.Situacao = 1;
+
             var filter = Builders<ListaCompras>.Filter.Eq(s => s.Id, dto.ListaComprasId);
             var update = Builders<ListaCompras>.Update.Push(s => s.ItemLista, dto.ItemLista);
 
             await _shoppingListCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task RemoveProductAsync(RemoveProdutoNaLista dto)
+        public async Task RemoveProductAsync(RemoveProdutoLista dto)
         {
             var filter = Builders<ListaCompras>.Filter.Eq(s => s.Id, dto.ListaComprasId);
-            var update = Builders<ListaCompras>.Update.PullFilter(s => s.ItemLista, item => item.ProdutoId == dto.ItemListaId);
+            var update = Builders<ListaCompras>.Update.PullFilter(s => s.ItemLista, item => item.Id == dto.Id);
             await _shoppingListCollection.UpdateOneAsync(filter, update);
         }
+
+        //public async Task UpdateItemAsync(AtualizaItemListaDto dto)
+        //{
+        //    var lista = await GetAsync(dto.ListaComprasId);
+
+        //    if (lista == null)
+        //        throw new Exception("Lista de compras não encontrada.");
+
+        //    var item = lista.ItemLista.FirstOrDefault(i => i.Id == dto.Id);
+
+        //    if (item == null)
+        //        throw new Exception("Item da lista não encontrado.");
+
+        //    item.Nome = dto.Nome;
+        //    item.Quantidade = dto.Quantidade;
+        //    item.Unidade = dto.Unidade;
+        //    item.Situacao = dto.Situacao;
+
+        //    await _listaComprasRepository.UpdateAsync(lista);
+        //}
     }
 }

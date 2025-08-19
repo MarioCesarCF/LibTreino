@@ -8,6 +8,7 @@ using LibTreino.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Extensions;
 
 namespace LibTreino.Controllers
 {
@@ -16,12 +17,10 @@ namespace LibTreino.Controllers
     public class ListaComprasController : ControllerBase
     {
         private readonly ListaComprasService _shoppingListService;
-        private readonly ProdutoService _produtoService;
 
-        public ListaComprasController(ListaComprasService shoppingListService, ProdutoService produtoService)
+        public ListaComprasController(ListaComprasService shoppingListService)
         {
             _shoppingListService = shoppingListService;
-            _produtoService = produtoService;
         }
 
         //[Authorize]
@@ -36,12 +35,12 @@ namespace LibTreino.Controllers
                 Nome = lista.Nome,
                 ItemLista = lista.ItemLista?.Select(prod => new ItemListaDto
                 {
-                    ProdutotId = prod.ProdutoId,
+                    Id = prod.Id,
                     Nome = prod.Nome,
                     Quantidade = prod.Quantidade,
-                    Unidade = prod.Unidade,
+                    Unidade = ToEnumDTO<Unidade>(prod.Unidade),
                     Situacao = prod.Situacao
-                }).ToList() ?? new List<ItemListaDto>()
+                }).ToList().OrderBy(x => x.Nome)
             }).ToList();
 
             return dtoListas;
@@ -82,28 +81,65 @@ namespace LibTreino.Controllers
         [HttpPost("add-item")]
         public async Task<IActionResult> AddProductToListAsync([FromBody] AdicionaProdutoNaLista dto)
         {
-            var produtosPorNome = await _produtoService.GetByNome(dto.ItemLista.Nome);
-            var itemAdicionado = new Produto();
-
-            if (produtosPorNome.IsNullOrEmpty())
-            {
-                var criarProduto = new CriaProduto
-                {
-                    Nome = dto.ItemLista.Nome
-                };
-
-                itemAdicionado = await _produtoService.CreateAsync(criarProduto);
-            }
-
             await _shoppingListService.AddProductAsync(dto);
             return NoContent();
         }
 
         [HttpPost("remove-item")]
-        public async Task<IActionResult> RemoveProductToListAsync([FromBody] RemoveProdutoNaLista dto)
+        public async Task<IActionResult> RemoveProductToListAsync([FromBody] RemoveProdutoLista dto)
         {
             await _shoppingListService.RemoveProductAsync(dto);
             return NoContent();
+        }
+
+        [HttpPost("edit-item")]
+        public async Task<IActionResult> UpdateItemInListAsync([FromBody] AtualizaItemListaDto itemAtualizado)
+        {
+            var lista = await _shoppingListService.GetAsync(itemAtualizado.ListaComprasId);
+            if (lista == null)
+                throw new Exception("Lista de compras não encontrada.");
+
+            var item = lista.ItemLista.FirstOrDefault(i => i.Id == itemAtualizado.Id);
+            if (item == null)
+                throw new Exception("Item da lista não encontrado.");
+                        
+            item.Nome = itemAtualizado.Nome;
+            item.Quantidade = itemAtualizado.Quantidade;
+            item.Unidade = itemAtualizado.Unidade;
+            item.Situacao = itemAtualizado.Situacao;
+
+            lista.ItemLista.ToList().Add(item);
+
+            var listaAtualizada = new AtualizaListaCompras
+            {
+                Id = lista.Id,
+                ItemLista = lista.ItemLista
+            };
+
+            await _shoppingListService.UpdateAsync(listaAtualizada);
+            return NoContent();
+        }
+
+        private EnumDTO ToEnumDTO<TEnum>(int valor) where TEnum : Enum
+        {
+            if (!Enum.IsDefined(typeof(TEnum), valor))
+            {
+                return new EnumDTO
+                {
+                    Id = null,
+                    Descricao = "Desconhecido",
+                    Valor = valor
+                };
+            }
+
+            var enumValue = (TEnum)Enum.ToObject(typeof(TEnum), valor);
+
+            return new EnumDTO
+            {
+                Id = enumValue.ToString(),
+                Descricao = ((Enum)(object)enumValue).GetDisplayName(),
+                Valor = valor
+            };
         }
     }
 }
