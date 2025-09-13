@@ -1,13 +1,10 @@
 ﻿using LibTreino.Enums;
 using LibTreino.Models;
-using LibTreino.Models.Commons;
 using LibTreino.Models.DTOs;
 using LibTreino.Models.ViewModels.Lista;
-using LibTreino.Models.ViewModels.Produto;
 using LibTreino.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Extensions;
 
 namespace LibTreino.Controllers
@@ -22,8 +19,8 @@ namespace LibTreino.Controllers
         {
             _shoppingListService = shoppingListService;
         }
-
-        //[Authorize]
+        
+        [Authorize]
         [HttpGet]
         public async Task<List<ListaComprasDto>> GetShoppingListsAsync()
         {
@@ -46,14 +43,14 @@ namespace LibTreino.Controllers
             return dtoListas;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ListaCompras> RetornaShoppingListAsync(string id)
         {
             return await _shoppingListService.GetAsync(id);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost]
         public async Task<ListaCompras> CreateShoppingListAsync(CriaListaCompras newShoppingList)
         {
@@ -62,7 +59,7 @@ namespace LibTreino.Controllers
             return shoppingList;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShoppingListAsync([FromBody] AtualizaListaCompras updateShoppingList)
         {
@@ -70,7 +67,7 @@ namespace LibTreino.Controllers
             return NoContent();
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveShoppingListAsync(string id)
         {
@@ -78,6 +75,7 @@ namespace LibTreino.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPost("add-item")]
         public async Task<IActionResult> AddProductToListAsync([FromBody] AdicionaProdutoNaLista dto)
         {
@@ -85,6 +83,7 @@ namespace LibTreino.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPost("remove-item")]
         public async Task<IActionResult> RemoveProductToListAsync([FromBody] RemoveProdutoLista dto)
         {
@@ -92,6 +91,7 @@ namespace LibTreino.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPost("edit-item")]
         public async Task<IActionResult> UpdateItemInListAsync([FromBody] AtualizaItemListaDto itemAtualizado)
         {

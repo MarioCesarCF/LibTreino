@@ -59,6 +59,17 @@ builder.Services.AddCors(option => option.AddDefaultPolicy(policy =>
     policy.AllowAnyHeader();
 }));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200") // front Angular
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -74,7 +85,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.UseCors();
+app.UseCors("AllowAngular");
 
 app.MapControllers();
 

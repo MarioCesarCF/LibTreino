@@ -64,7 +64,11 @@ namespace LibTreino.Controllers
                 return Unauthorized("Usuário ou senha inválidos");
 
             var token = _tokenService.GenerateToken(user);
-            return Ok(new { token });
+            return Ok(new { 
+                token,
+                userName = user.Name,
+                userId = user.Id.ToString()
+            });
         }
     }
 }
