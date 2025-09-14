@@ -60,6 +60,12 @@ namespace LibTreino.Services
             if (updateUser.Listas != null)
                 updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.Listas, updateUser.Listas));
 
+            if (updateUser.RefreshToken != null)
+                updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.RefreshToken, updateUser.RefreshToken));
+
+            if (updateUser.RefreshTokenExpiryTime != null)
+                updateDefinitions.Add(Builders<Usuario>.Update.Set(p => p.RefreshTokenExpiryTime, updateUser.RefreshTokenExpiryTime));
+
             var combinedUpdates = Builders<Usuario>.Update.Combine(updateDefinitions);
 
             await _userCollection.UpdateOneAsync(x => x.Id == id, combinedUpdates);
@@ -70,9 +76,10 @@ namespace LibTreino.Services
             await _userCollection.DeleteOneAsync(x => x.Id == id);
         }
 
-        public async Task<Usuario> GetByEmailAsync(string email)
-        {
-            return await _userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
-        }
+        public async Task<Usuario> GetByEmailAsync(string email) => 
+            await _userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
+
+        public async Task<Usuario?> GetByRefreshTokenAsync(string refreshToken) =>
+            await _userCollection.Find(u => u.RefreshToken == refreshToken).FirstOrDefaultAsync();
     }
 }

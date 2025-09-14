@@ -11,12 +11,10 @@ namespace LibTreino.Controllers
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _userService;
-        private readonly TokenService _tokenService;
 
-        public UsuarioController(UsuarioService userService, TokenService tokenService)
+        public UsuarioController(UsuarioService userService)
         {
             _userService = userService;
-            _tokenService = tokenService;
         }
 
         [Authorize]
@@ -53,22 +51,6 @@ namespace LibTreino.Controllers
         public async Task RemoveUserAsync(string id)
         {
             await _userService.RemoveAsync(id);
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUser loginUser)
-        {
-            var user = await _userService.GetByEmailAsync(loginUser.Email);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password))
-                return Unauthorized("Usuário ou senha inválidos");
-
-            var token = _tokenService.GenerateToken(user);
-            return Ok(new { 
-                token,
-                userName = user.Name,
-                userId = user.Id.ToString()
-            });
         }
     }
 }

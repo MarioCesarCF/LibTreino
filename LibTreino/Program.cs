@@ -1,4 +1,4 @@
-using DotNetEnv;
+Ôªøusing DotNetEnv;
 using LibTreino.Data;
 using LibTreino.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,8 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 DotNetEnv.Env.Load();
 
-// ConfiguraÁıes do banco. Estudar melhor essa parte.
-// Singleton para garantir apenas 1 conex„o do banco
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            var origins = new string[] { "http://localhost:4200", "https://localhost:7050" };
+            policy.WithOrigins(origins) // front Angular
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
+// Configura√ß√µes do banco. Estudar melhor essa parte.
+// Singleton para garantir apenas 1 conex√£o do banco
 builder.Services.Configure<ConfigDatabaseSettings>(options =>
 {
     var mongoUser = Environment.GetEnvironmentVariable("MONGO_USER");
@@ -28,8 +40,6 @@ builder.Services.AddSingleton<ListaComprasService>();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<TokenService>();
 
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -37,12 +47,20 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY");
+    var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+    var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
@@ -52,23 +70,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors(option => option.AddDefaultPolicy(policy =>
-{
-    policy.AllowAnyOrigin();
-    policy.AllowAnyMethod();
-    policy.AllowAnyHeader();
-}));
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngular",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:4200") // front Angular
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
 
 var app = builder.Build();
 
@@ -81,11 +82,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-
-app.UseAuthorization();
-
 app.UseCors("AllowAngular");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
